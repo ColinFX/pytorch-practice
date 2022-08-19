@@ -68,7 +68,7 @@ def loss_fn(outputs: Variable, labels: Variable) -> Variable:
     Args:
         * outputs: (Variable) outpout of the model, shape: batch_size * 6
         * labels: (Variable) ground truth label of the image, shape: batch_size with each element a value in 
-            [0,1,2,3,4,5]
+          [0,1,2,3,4,5]
 
     Returns:
         * loss: (Variable) cross entropy loss for all images in the batch
@@ -82,7 +82,7 @@ def accuracy(outputs: np.ndarray, labels: np.ndarray) -> float:
     Args: 
         * outputs: (np.ndarray) outpout of the model, shape: batch_size * 6
         * labels: (np.ndarray) ground truth label of the image, shape: batch_size with each element a value in 
-            [0,1,2,3,4,5]
+          [0,1,2,3,4,5]
 
     Returns:
         * accuracy: (float) in [0,1]

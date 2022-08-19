@@ -102,7 +102,7 @@ def train_and_evaluate(model: nn.Module,
         * metrics: (dict) of functions (Callable) output_batch, labels_batch -> metric
         * params: (utils.Params) hyperparameters
         * model_dir: (str) directory containing config, checkpoints and log
-        * restore_file: (str) optional- name of checkpoint to restore from (without extension .pth.tar)
+        * restore_file: (str) optional - name of checkpoint to restore from (without extension .pth.tar)
     """
 
     # reload weights from checkpoint is available
