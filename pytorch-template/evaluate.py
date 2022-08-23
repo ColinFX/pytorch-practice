@@ -19,7 +19,7 @@ import utils
 parser = argparse.ArgumentParser()
 parser.add_argument("--data_dir", default="data/dataset_name", help="")
 parser.add_argument("--model_dir", default="experiments/base_model", help="")   # hyper-parameter json file
-parser.add_argument("--restore_file", default="best", help="")    # "best" or "train", model weights checkpoint ?
+parser.add_argument("--restore_file", default="best", help="")    # "best" or "last", model weights checkpoint
 
 
 def evaluate(model: nn.Module, 
@@ -83,11 +83,9 @@ if __name__ == "__main__":
     logging.info("Loading the dataset...")
 
     # load data
-    data_loader = DatasetNameDataLoader(args.data_dir, params)
-    data = data_loader.load_data(["test"], args.data_dir)
-    test_data = data["test"]
-    params.test_size = test_data["size"]
-    test_data_iterator = data_loader.data_iterator(test_data, params)
+    test_data_loader = fetch_dataloader("test", args.data_dir, params)
+    params.test_size = len(test_data_loader.dataset)
+    test_data_iterator = iter(test_data_loader)
     logging.info("- Done")
 
     # define model

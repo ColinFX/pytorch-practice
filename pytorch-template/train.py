@@ -8,10 +8,11 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
+from torch.utils.data import DataLoader
 from tqdm import trange
 from typing import Callable, Generator, List
 
-from model.data_loader import DatasetNameDataLoader
+from model.data_loader import fetch_dataloader
 import model.net as net
 from evaluate import evaluate
 import utils
@@ -81,10 +82,10 @@ def train(model: nn.Module,
 
 
 def train_and_evaluate(model: nn.Module, 
-                       train_data: dict[str, Variable], 
-                       val_data: dict[str, Variable], 
                        optimizer: torch.optim, 
                        loss_fn: Callable[[Variable, Variable], Variable], 
+                       train_data_loader: DataLoader, 
+                       val_data_loader: DataLoader, 
                        metrics: dict[str, Callable[[np.ndarray, np.ndarray], float]], 
                        params: utils.Params, 
                        model_dir: str, 
@@ -94,11 +95,10 @@ def train_and_evaluate(model: nn.Module,
     
     Args:
         * model: (nn.Module) the neural network
-        * train_data: (dict) training data with keys "data" and "labels"
-        * val_data: (dict) validation data with keys "data" and "labels"
         * optimizer: (torch.optim) the optimizer for parameters in the model
         * loss_fn: (Callable) output_batch, labels_batch -> loss
-        * data_ietrator: (Generator) -> train_batch, labels_batch
+        * train_data_loader: (DalaLoader) for training set
+        * val_data_loader: (DalaLoader) for validation set
         * metrics: (dict) of functions (Callable) output_batch, labels_batch -> metric
         * params: (utils.Params) hyperparameters
         * model_dir: (str) directory containing config, checkpoints and log
@@ -118,12 +118,12 @@ def train_and_evaluate(model: nn.Module,
         
         # train
         num_steps = (params.train_size+1) // params.batch_size
-        train_data_iterator = data_loader.data_iterator(train_data, params, shuffle=True)
+        train_data_iterator = iter(train_data_loader)
         train(model, optimizer, loss_fn, train_data_iterator, metrics, params, num_steps)
 
         # evaluate
         num_steps = (params.val_size+1) // params.batch_size
-        val_data_iterator = data_loader.data_iterator(val_data, params, shuffle=True)
+        val_data_iterator = iter(val_data_loader)
         val_metrics = evaluate(model, loss_fn, val_data_iterator, metrics, params, num_steps)
         val_acc = val_metrics["accuracy"]
         is_best = (val_acc>=best_val_acc)
@@ -168,12 +168,10 @@ if __name__ == "__main__":
     logging.info("Loading the dataset...")
 
     # load data
-    data_loader = DatasetNameDataLoader(args.data_dir, params)
-    data = data_loader.load_data(["train", "val"], args.data_dir)
-    train_data = data["train"]
-    val_data = data["val"]
-    params.train_size = train_data["size"]
-    params.val_size = val_data["size"]
+    train_data_loader = fetch_dataloader("train", args.data_dir, params)
+    val_data_loader = fetch_dataloader("val", args.data_dir, params)
+    params.train_size = len(train_data_loader.dataset)
+    params.val_size = len(val_data_loader.dataset)
     logging.info("- Done")
 
     # train and evaluate pipeline
@@ -182,5 +180,5 @@ if __name__ == "__main__":
     loss_fn = net.loss_fn
     metrics = net.metrics
     logging.info("Starting training for {} epoch(s)".format(params.num_epochs))
-    train_and_evaluate(model, train_data, val_data, optimizer, loss_fn, metrics, params, args.model_dir, 
+    train_and_evaluate(model, optimizer, loss_fn, train_data_loader, val_data_loader, metrics, params, args.model_dir, 
                        args.restore_file)
