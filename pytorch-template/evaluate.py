@@ -11,7 +11,7 @@ from torch.autograd import Variable
 from tqdm import trange
 from typing import Callable, Generator, List
 
-from model.data_loader import DataLoader
+from model.data_loader import fetch_dataloader
 import model.net as net
 import utils
 
@@ -83,7 +83,7 @@ if __name__ == "__main__":
     logging.info("Loading the dataset...")
 
     # load data
-    data_loader = DataLoader(args.data_dir, params)
+    data_loader = DatasetNameDataLoader(args.data_dir, params)
     data = data_loader.load_data(["test"], args.data_dir)
     test_data = data["test"]
     params.test_size = test_data["size"]
