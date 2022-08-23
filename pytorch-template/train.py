@@ -39,7 +39,7 @@ def train(model: nn.Module,
         * optimizer: (torch.optim) the optimizer for parameters in the model
         * loss_fn: (Callable) output_batch, labels_batch -> loss
         * data_ietrator: (Generator) -> train_batch, labels_batch
-        * metrics: (dict) of functions (Callable) output_batch, labels_batch -> metric
+        * metrics: (dict) metric_name -> (function (Callable) output_batch, labels_batch -> metric_value)
         * params: (utils.Params) hyperparameters
         * num_steps: (int) number of batches to train for each epoch
     """
@@ -91,7 +91,7 @@ def train_and_evaluate(model: nn.Module,
                        model_dir: str, 
                        restore_file: str = None): 
     """
-    Train and evaluate the model on `params.num_epochs` epochs. 
+    Train and evaluate the model on `params.num_epochs` epochs and save checkpoints and metrics. 
     
     Args:
         * model: (nn.Module) the neural network
@@ -99,7 +99,7 @@ def train_and_evaluate(model: nn.Module,
         * loss_fn: (Callable) output_batch, labels_batch -> loss
         * train_data_loader: (DalaLoader) for training set
         * val_data_loader: (DalaLoader) for validation set
-        * metrics: (dict) of functions (Callable) output_batch, labels_batch -> metric
+        * metrics: (dict) metric_name -> (function (Callable) output_batch, labels_batch -> metric_value)
         * params: (utils.Params) hyperparameters
         * model_dir: (str) directory containing config, checkpoints and log
         * restore_file: (str) optional - name of checkpoint to restore from (without extension .pth.tar)

@@ -20,13 +20,16 @@ def launch_training_job(parent_dir: str, data_dir: str, job_name: str, params: u
     `parent_dir/job_name/params.json`. The structure of parent_dir should be:
     
     ```
-    parent_dir/
-        params.json
-        job_name_1/
+    experiments/
+        base_model/
             params.json
-        job_name_2/
+        parent_dir/
             params.json
-        ...
+            job_name_1/
+                params.json
+            job_name_2/
+                params.json
+            ...
     ```
     
     Args:

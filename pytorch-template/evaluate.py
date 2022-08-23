@@ -35,7 +35,7 @@ def evaluate(model: nn.Module,
         * model: (nn.Module) the neural network
         * loss_fn: (Callable) output_batch, labels_batch -> loss
         * data_ietrator: (Generator) -> train_batch, labels_batch
-        * metrics: (dict) of functions (Callable) output_batch, labels_batch -> metric
+        * metrics: (dict) metric_name -> (function (Callable) output_batch, labels_batch -> metric_value)
         * params: (utils.Params) hyperparameters
         * num_steps: (int) number of batches to train for each epoch
     """
@@ -63,7 +63,7 @@ def evaluate(model: nn.Module,
 
 
 if __name__ == "__main__":
-    """Evaluate the model on the test set"""
+    """Evaluate the model on the test seT and save metrics result"""
 
     args = parser.parse_args()
     json_path = os.path.join(args.model_dir, "params.json")
