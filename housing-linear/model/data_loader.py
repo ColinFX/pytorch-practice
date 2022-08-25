@@ -5,6 +5,8 @@ import pandas as pd
 import torch
 from torch.utils.data import TensorDataset, Dataset, DataLoader, random_split
 
+import utils
+
 
 def fetch_dataset(data_dir: str) -> Dataset:
     """
@@ -33,7 +35,7 @@ def fetch_dataset(data_dir: str) -> Dataset:
     return TensorDataset(input_tensor, target_tensor)
 
 
-def fetch_dataloaders(data_dir: str, val_split_percent: float, batch_size: int) -> dict[str, DataLoader]:
+def fetch_dataloaders(data_dir: str, params: utils.Params) -> dict[str, DataLoader]:
     """
     Args:
         * data_dir: (str) directory containing USA_Housing.csv file
@@ -45,10 +47,10 @@ def fetch_dataloaders(data_dir: str, val_split_percent: float, batch_size: int) 
 
     # split dataset
     dataset = fetch_dataset(data_dir)
-    val_size = len(dataset) * val_split_percent
+    val_size = len(dataset) * params.val_split_percentage
     train_size = len(dataset) - val_size
     train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
 
-    train_dataloader = DataLoader(train_dataset, batch_size, shuffle=True)
-    val_dataloader = DataLoader(val_dataset, batch_size, shuffle=False)
+    train_dataloader = DataLoader(train_dataset, params.batch_size, shuffle=True)
+    val_dataloader = DataLoader(val_dataset, params.batch_size, shuffle=False)
     return {"train": train_dataloader, "val": val_dataloader}
