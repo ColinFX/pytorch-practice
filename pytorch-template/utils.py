@@ -116,12 +116,14 @@ def save_checkpoint(state: dict[str, float or dict], is_best: bool, checkpoint_d
         torch.save(state, os.path.join(checkpoint_dir, "best.pth.tar"))
 
 
-def load_checkpoint(checkpoint_path: str, model: nn.Module, optimizer: torch.optim = None) -> dict[str, float or dict]:
+def load_checkpoint(checkpoint_path: str, 
+                    model: nn.Module, 
+                    optimizer: torch.optim.optimizer.Optimizer = None) -> dict[str, float or dict]:
     """
     Args: 
         * checkpoint_dir: (str) path of the checkpoint
         * model: (nn.Module) model that weights will be loaded to
-        * optimizer: (torch.optim) optional - optimizer that weights will be loaded to
+        * optimizer: (torch.optim.optimizer.Optimizer) optional - optimizer that weights will be loaded to
     """
 
     if not os.path.exists(checkpoint_path):
