@@ -8,7 +8,7 @@ from typing import Callable
 class Net(nn.Module):
     """Linear regression module"""
 
-    def __init__(self) -> None:
+    def __init__(self):
         super().__init__()
         self.fc1 = nn.Linear(in_features=5, out_features=1)
 

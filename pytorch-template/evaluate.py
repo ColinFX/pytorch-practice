@@ -23,8 +23,8 @@ parser.add_argument("--restore_file", default="best", help="")    # "best" or "l
 
 def evaluate(model: nn.Module, 
              loss_fn: Callable[[torch.Tensor, torch.Tensor], torch.FloatTensor], 
-             data_iterator: Generator[tuple(torch.Tensor, torch.Tensor), None, None], 
-             metrics: dict[str, Callable[[np.ndarray, np.ndarray], float]], 
+             data_iterator: Generator[tuple[torch.Tensor, torch.Tensor], None, None], 
+             metrics: dict[str, Callable[[np.ndarray, np.ndarray], np.float64]], 
              params: utils.Params, 
              num_steps: int) -> dict[str, float]:
     """
@@ -43,7 +43,7 @@ def evaluate(model: nn.Module,
     """
     
     model.eval()   # set model to evaluation mode
-    summ: List[dict[str, float]] = []   # summary for the epoch
+    summ: List[dict[str, float]] = []   # summary of metrics for the epoch
     
     t = trange(num_steps)
     for i in t:
@@ -53,7 +53,7 @@ def evaluate(model: nn.Module,
         output_batch = model(data_batch)
         loss = loss_fn(output_batch, labels_batch)
 
-        # evaluate all metrics on the batch
+        # evaluate all metrics on every batch
         summary_batch = {metric: metrics[metric](output_batch, labels_batch) for metric in metrics}
         summary_batch["loss"] = loss.item()
         summ.append(summary_batch)
@@ -65,7 +65,7 @@ def evaluate(model: nn.Module,
 
 
 if __name__ == "__main__":
-    """Evaluate the model on the test seT and save metrics result"""
+    """Evaluate the model on the test set and save metrics result"""
 
     args = parser.parse_args()
     json_path = os.path.join(args.model_dir, "params.json")

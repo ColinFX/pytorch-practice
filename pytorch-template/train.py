@@ -26,7 +26,7 @@ parser.add_argument("--restore_file", default=None, help="")    # "best" or "tra
 def train(model: nn.Module, 
           optimizer: torch.optim.optimizer.Optimizer, 
           loss_fn: Callable[[torch.Tensor, torch.Tensor], torch.FloatTensor], 
-          data_iterator: Generator[tuple(torch.Tensor, torch.Tensor), None, None], 
+          data_iterator: Generator[tuple[torch.Tensor, torch.Tensor], None, None], 
           metrics: dict[str, Callable[[np.ndarray, np.ndarray], np.float64]], 
           params: utils.Params, 
           num_steps: int):
@@ -44,7 +44,7 @@ def train(model: nn.Module,
     """
 
     model.train()   # set model to training mode
-    summ: List[dict[str, float]] = []   # summary for the epoch
+    summ: List[dict[str, float]] = []   # summary of metrics for the epoch
     loss_avg = utils.RunningAverage()   # running average of loss for the epoch
     
     t = trange(num_steps)
@@ -64,8 +64,8 @@ def train(model: nn.Module,
 
         # evaluate summaries once in a while
         if i % params.save_summary_steps == 0:
-            output_batch = output_batch.data.cpu().numpy()
-            labels_batch = labels_batch.data.cpu().numpy()
+            output_batch = output_batch.detach().cpu().numpy()
+            labels_batch = labels_batch.detach().cpu().numpy()
             summary_batch = {metric: metrics[metric](output_batch, labels_batch) for metric in metrics}
             summary_batch["loss"] = loss.item()
             summ.append(summary_batch)
