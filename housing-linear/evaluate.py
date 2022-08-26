@@ -66,12 +66,30 @@ if __name__ == "__main__":
     assert os.path.isfile(json_path), "No json file found at {}.".format(json_path)
     params = utils.Params(json_path)
 
-    # use GPU if available
-    params.cuda = torch.cuda.is_available()
-
     # set random seed
     torch.manual_seed(42)
 
     # set logger
     utils.set_logger(os.path.join(args.model_dir, "evaluate.log"))
     logging.info("Loading the dataset...")
+
+    # load data
+    test_data_loader = fetch_dataloaders(args.data_dir, params)["test"]
+    params.test_size = len(test_data_loader.dataset)
+    test_data_iterator = iter(test_data_loader)
+    logging.info("- Done")
+
+    # define model
+    model = net.Net()
+    loss_fn = net.loss_fn
+    metrics = net.metrics
+    num_steps = (params.test_size+1) // params.batch_size
+
+    # evaluate pipeline
+    logging.info("Starting evaluation")
+    utils.load_checkpoint(os.path.join(args.model_dir, args.restore_file+".pth.tar"), model)    
+    test_metrics = evaluate(model, loss_fn, test_data_iterator, metrics, params, num_steps)
+
+    # save metrics evaluation result on the restore_file
+    save_path = os.path.join(args.model_dir, "metrics_test_{}.json".format(args.restore_file))
+    utils.save_dict_to_json(test_metrics, save_path)
