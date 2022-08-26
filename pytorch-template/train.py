@@ -7,7 +7,6 @@ import os
 import numpy as np
 import torch
 import torch.nn as nn
-from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from tqdm import trange
 from typing import Callable, Generator, List
@@ -25,10 +24,10 @@ parser.add_argument("--restore_file", default=None, help="")    # "best" or "tra
 
 
 def train(model: nn.Module, 
-          optimizer: torch.optim, 
-          loss_fn: Callable[[Variable, Variable], Variable], 
-          data_iterator: Generator[tuple(Variable, Variable), None, None], 
-          metrics: dict[str, Callable[[np.ndarray, np.ndarray], float]], 
+          optimizer: torch.optim.optimizer.Optimizer, 
+          loss_fn: Callable[[torch.Tensor, torch.Tensor], torch.FloatTensor], 
+          data_iterator: Generator[tuple(torch.Tensor, torch.Tensor), None, None], 
+          metrics: dict[str, Callable[[np.ndarray, np.ndarray], np.float64]], 
           params: utils.Params, 
           num_steps: int):
     """
@@ -36,7 +35,7 @@ def train(model: nn.Module,
     
     Args:
         * model: (nn.Module) the neural network
-        * optimizer: (torch.optim) the optimizer for parameters in the model
+        * optimizer: (torch.optim.optimizer.Optimizer) the optimizer for parameters in the model
         * loss_fn: (Callable) output_batch, labels_batch -> loss
         * data_ietrator: (Generator) -> train_batch, labels_batch
         * metrics: (dict) metric_name -> (function (Callable) output_batch, labels_batch -> metric_value)
@@ -55,8 +54,6 @@ def train(model: nn.Module,
         if params.cuda:     # move to GPU if available
             train_batch = train_batch.cuda(non_blocking=True)
             labels_batch = labels_batch.cuda(non_blocking=True)
-        train_batch = Variable(train_batch)
-        labels_batch = Variable(labels_batch)
 
         # core pipeline
         output_batch = model(train_batch)
@@ -82,11 +79,11 @@ def train(model: nn.Module,
 
 
 def train_and_evaluate(model: nn.Module, 
-                       optimizer: torch.optim, 
-                       loss_fn: Callable[[Variable, Variable], Variable], 
+                       optimizer: torch.optim.optimizer.Optimizer, 
+                       loss_fn: Callable[[torch.Tensor, torch.Tensor], torch.FloatTensor], 
                        train_data_loader: DataLoader, 
                        val_data_loader: DataLoader, 
-                       metrics: dict[str, Callable[[np.ndarray, np.ndarray], float]], 
+                       metrics: dict[str, Callable[[np.ndarray, np.ndarray], np.float64]], 
                        params: utils.Params, 
                        model_dir: str, 
                        restore_file: str = None): 
@@ -95,7 +92,7 @@ def train_and_evaluate(model: nn.Module,
     
     Args:
         * model: (nn.Module) the neural network
-        * optimizer: (torch.optim) the optimizer for parameters in the model
+        * optimizer: (torch.optim.optimizer.Optimizer) the optimizer for parameters in the model
         * loss_fn: (Callable) output_batch, labels_batch -> loss
         * train_data_loader: (DalaLoader) for training set
         * val_data_loader: (DalaLoader) for validation set

@@ -4,7 +4,6 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.autograd import Variable
 
 import utils
 
@@ -39,13 +38,13 @@ class Net(nn.Module):
         self.fcbn1 = nn.BatchNorm1d(num_features=self.num_channels*4)
         self.fc2 = nn.Linear(in_features=self.num_channels*4, out_features=6)
 
-    def forward(self, data_batch: Variable) -> Variable:
+    def forward(self, data_batch: torch.Tensor) -> torch.Tensor:
         """
         Args:
-            * data_batch: (Variable) contains a batch of images, shape: batch_size * 3 * 64 * 64
+            * data_batch: (torch.Tensor) contains a batch of images, shape: batch_size * 3 * 64 * 64
         
         Returns:
-            * out: (Variable) predicted log probability distribution of each image, shape: batch_size * 6
+            * out: (torch.Tensor) predicted log probability distribution of each image, shape: batch_size * 6
         """
         data_batch = self.bn1(self.conv1(data_batch))       # batch_size * num_channels * 64 * 64
         data_batch = F.relu(F.max_pool2d(data_batch, 2))    # batch_size * num_channels * 32 * 32
@@ -63,21 +62,21 @@ class Net(nn.Module):
         return F.log_softmax(data_batch, dim=1) # batch_size * 6
 
 
-def loss_fn(outputs: Variable, labels: Variable) -> Variable:
+def loss_fn(outputs: torch.Tensor, labels: torch.Tensor) -> torch.FloatTensor:
     """
     Args:
-        * outputs: (Variable) outpout of the model, shape: batch_size * 6
-        * labels: (Variable) ground truth label of the image, shape: batch_size with each element a value in 
+        * outputs: (torch.Tensor) outpout of the model, shape: batch_size * 6
+        * labels: (torch.Tensor) ground truth label of the image, shape: batch_size with each element a value in 
           [0,1,2,3,4,5]
 
     Returns:
-        * loss: (Variable) cross entropy loss for all images in the batch
+        * loss: (torch.FloatTensor) cross entropy loss for all images in the batch
     """
     loss = nn.CrossEntropyLoss()
     return loss(outputs, labels)
 
 
-def accuracy(outputs: np.ndarray, labels: np.ndarray) -> float:
+def accuracy(outputs: np.ndarray, labels: np.ndarray) -> np.float64:
     """
     Args: 
         * outputs: (np.ndarray) outpout of the model, shape: batch_size * 6
