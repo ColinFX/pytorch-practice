@@ -1,3 +1,7 @@
+import argparse
+import logging
+import os
+
 import numpy as np
 import torch
 import torch.nn as nn
@@ -29,7 +33,6 @@ def train(model: nn.Module,
     """
 
     model.train()
-    summ: List[dict[str, float]] = []
     loss_avg = utils.RunningAverage()
 
     t = trange(num_steps)
@@ -40,3 +43,6 @@ def train(model: nn.Module,
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+
+        loss_avg.update(loss.item())
+        t.set_postfix(loss="{:05.3f}".format(loss_avg()))
