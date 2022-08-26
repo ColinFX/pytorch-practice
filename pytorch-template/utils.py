@@ -48,7 +48,7 @@ class RunningAverage():
         self.steps: int = 0
         self.total: float = 0
 
-    def udpate(self, val: float):
+    def update(self, val: float):
         self.steps += 1
         self.total += val
 

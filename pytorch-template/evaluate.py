@@ -7,7 +7,6 @@ import os
 import numpy as np
 import torch
 import torch.nn as nn
-from torch.autograd import Variable
 from tqdm import trange
 from typing import Callable, Generator, List
 
@@ -23,8 +22,8 @@ parser.add_argument("--restore_file", default="best", help="")    # "best" or "l
 
 
 def evaluate(model: nn.Module, 
-             loss_fn: Callable[[Variable, Variable], Variable], 
-             data_iterator: Generator[tuple(Variable, Variable), None, None], 
+             loss_fn: Callable[[torch.Tensor, torch.Tensor], torch.FloatTensor], 
+             data_iterator: Generator[tuple(torch.Tensor, torch.Tensor), None, None], 
              metrics: dict[str, Callable[[np.ndarray, np.ndarray], float]], 
              params: utils.Params, 
              num_steps: int) -> dict[str, float]:
@@ -38,6 +37,9 @@ def evaluate(model: nn.Module,
         * metrics: (dict) metric_name -> (function (Callable) output_batch, labels_batch -> metric_value)
         * params: (utils.Params) hyperparameters
         * num_steps: (int) number of batches to train for each epoch
+
+    Returns:
+        * metric_results: (dict) metric_name -> metric_value, metrics are provided metrics and loss 
     """
     
     model.eval()   # set model to evaluation mode
