@@ -55,12 +55,13 @@ def metrics_to_csv(parent_dir: str, metrics: dict[str, dict[str, float]]):
     """
 
     csv_path = os.path.join(parent_dir, "results.csv")
-    with open(csv_path, "wb") as csv_file:
-        header = metrics[parent_dir].keys()
-        csv_writer = csv.DictWriter(csv_file, header)
-        csv_writer.writeheader(header)
+    with open(csv_path, "w") as csv_file:
+        header = ["sub_dir"] + list(list(metrics.values())[0].keys())
+        print("synthesize_results l46", header)
+        csv_writer = csv.writer(csv_file)
+        csv_writer.writerow(header)
         for sub_dir in metrics:
-            csv_writer.writerow({metric: metrics[sub_dir][metric] for metric in header})
+            csv_writer.writerow([sub_dir] + [metrics[sub_dir][metric] for metric in header[1:]])
 
 
 if __name__ == "__main__":

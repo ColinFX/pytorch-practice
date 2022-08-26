@@ -1,0 +1,6 @@
+sub_dir,loss
+experiments/base_model,195176.61844758064
+experiments/learning_rate/learning_rate_1e-05,194745.35735887097
+experiments/learning_rate/learning_rate_1e-07,195176.61844758064
+experiments/learning_rate/learning_rate_1e-06,194789.43548387097
+experiments/learning_rate/learning_rate_1e-08,196719.3220766129

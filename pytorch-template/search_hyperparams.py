@@ -46,7 +46,7 @@ def launch_training_job(parent_dir: str, data_dir: str, job_name: str, params: u
 
     # write parameters to json
     json_path = os.path.join(model_dir, "params.json")
-    params.save(model_dir)
+    params.save(json_path)
 
     # launch training with this config
     cmd = "{} train.py --model_dir {} --data_dir {}".format(PYTHON, model_dir, data_dir) 
