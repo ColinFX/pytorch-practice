@@ -1,0 +1,4 @@
+{
+    "batch_size": 16, 
+    "val_split_percentage": 0.1
+}
