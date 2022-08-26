@@ -24,7 +24,7 @@ parser.add_argument("--restore_file", default=None, help="")    # "best" or "tra
 
 
 def train(model: nn.Module, 
-          optimizer: torch.optim.optimizer.Optimizer, 
+          optimizer: torch.optim.Optimizer, 
           loss_fn: Callable[[torch.Tensor, torch.Tensor], torch.FloatTensor], 
           data_iterator: Generator[tuple[torch.Tensor, torch.Tensor], None, None], 
           metrics: dict[str, Callable[[np.ndarray, np.ndarray], np.float64]], 
@@ -35,7 +35,7 @@ def train(model: nn.Module,
     
     Args:
         * model: (nn.Module) the neural network
-        * optimizer: (torch.optim.optimizer.Optimizer) the optimizer for parameters in the model
+        * optimizer: (torch.optim.Optimizer) the optimizer for parameters in the model
         * loss_fn: (Callable) output_batch, labels_batch -> loss
         * data_ietrator: (Generator) -> train_batch, labels_batch
         * metrics: (dict) metric_name -> (function (Callable) output_batch, labels_batch -> metric_value)
@@ -79,7 +79,7 @@ def train(model: nn.Module,
 
 
 def train_and_evaluate(model: nn.Module, 
-                       optimizer: torch.optim.optimizer.Optimizer, 
+                       optimizer: torch.optim.Optimizer, 
                        loss_fn: Callable[[torch.Tensor, torch.Tensor], torch.FloatTensor], 
                        train_data_loader: DataLoader, 
                        val_data_loader: DataLoader, 
@@ -92,7 +92,7 @@ def train_and_evaluate(model: nn.Module,
     
     Args:
         * model: (nn.Module) the neural network
-        * optimizer: (torch.optim.optimizer.Optimizer) the optimizer for parameters in the model
+        * optimizer: (torch.optim.Optimizer) the optimizer for parameters in the model
         * loss_fn: (Callable) output_batch, labels_batch -> loss
         * train_data_loader: (DalaLoader) for training set
         * val_data_loader: (DalaLoader) for validation set
@@ -130,7 +130,7 @@ def train_and_evaluate(model: nn.Module,
                                "state_dict": model.state_dict(), 
                                "optim_dict": optimizer.state_dict()}, 
                               is_best=is_best, 
-                              checkpoint_path=model_dir)
+                              checkpoint_dir=model_dir)
         
         # overwrite best metrics evaluation result if the model is the best by far
         if is_best:

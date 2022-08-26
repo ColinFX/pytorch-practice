@@ -20,6 +20,7 @@ class Net(nn.Module):
         Returns:
             * predicts: (torch.Tensor) predicted house prices, shape: batch_size * 1
         """
+        data_batch = data_batch.float()
         return self.fc1(data_batch)
 
 
