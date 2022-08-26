@@ -42,15 +42,17 @@ def fetch_dataloaders(data_dir: str, params: utils.Params) -> dict[str, DataLoad
         * params
 
     Returns:
-        * dataloaders: (dict) "train" or "val" -> DataLoader
+        * dataloaders: (dict) "train", "val", "test" -> DataLoader
     """
 
     # split dataset
     dataset = fetch_dataset(data_dir)
     val_size = len(dataset) * params.val_split_percentage
-    train_size = len(dataset) - val_size
-    train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+    test_size = len(dataset) * params.test_split_percentage
+    train_size = len(dataset) - val_size - test_size
+    train_dataset, val_dataset, test_dataset = random_split(dataset, [train_size, val_size, test_size])
 
     train_dataloader = DataLoader(train_dataset, params.batch_size, shuffle=True)
     val_dataloader = DataLoader(val_dataset, params.batch_size, shuffle=False)
-    return {"train": train_dataloader, "val": val_dataloader}
+    test_dataloader = DataLoader(test_dataset, params.batch_size, shuffle=False)
+    return {"train": train_dataloader, "val": val_dataloader, "test": test_dataloader}
