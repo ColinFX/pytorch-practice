@@ -8,7 +8,7 @@ from typing import Callable
 class Net(nn.Module):
     """Linear regression module"""
 
-    def __init__(self) -> None:
+    def __init__(self):
         super().__init__()
         self.fc1 = nn.Linear(in_features=5, out_features=1)
 
@@ -20,6 +20,7 @@ class Net(nn.Module):
         Returns:
             * predicts: (torch.Tensor) predicted house prices, shape: batch_size * 1
         """
+        data_batch = data_batch.float()
         return self.fc1(data_batch)
 
 

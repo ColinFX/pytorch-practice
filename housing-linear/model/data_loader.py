@@ -1,5 +1,4 @@
 import os
-from typing import List
 
 import pandas as pd
 import torch
@@ -22,7 +21,8 @@ def fetch_dataset(data_dir: str) -> Dataset:
 
     # pandas preprocessing
     dataframe = pd.read_csv(os.path.join(data_dir, "USA_Housing.csv"))
-    dataframe.drop(["address"], axis=1, inplace=True)
+    dataframe.drop(["Address"], axis=1, inplace=True)
+    print(dataframe.info())
     
     # split input and target and convert to tensor
     input_columns = dataframe.columns[:-1]
@@ -42,15 +42,17 @@ def fetch_dataloaders(data_dir: str, params: utils.Params) -> dict[str, DataLoad
         * params
 
     Returns:
-        * dataloaders: (dict) "train" or "val" -> DataLoader
+        * dataloaders: (dict) "train", "val", "test" -> DataLoader
     """
 
     # split dataset
     dataset = fetch_dataset(data_dir)
-    val_size = len(dataset) * params.val_split_percentage
-    train_size = len(dataset) - val_size
-    train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+    val_size = int(len(dataset) * params.val_split_percentage)
+    test_size = int(len(dataset) * params.test_split_percentage)
+    train_size = int(len(dataset) - val_size - test_size)
+    train_dataset, val_dataset, test_dataset = random_split(dataset, lengths=[train_size, val_size, test_size])
 
     train_dataloader = DataLoader(train_dataset, params.batch_size, shuffle=True)
     val_dataloader = DataLoader(val_dataset, params.batch_size, shuffle=False)
-    return {"train": train_dataloader, "val": val_dataloader}
+    test_dataloader = DataLoader(test_dataset, params.batch_size, shuffle=False)
+    return {"train": train_dataloader, "val": val_dataloader, "test": test_dataloader}
