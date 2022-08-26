@@ -11,3 +11,5 @@ Data: [Kaggle USA Housing Machine Learning Project](https://www.kaggle.com/code/
 For training the model on base model, execute `python3 -m train`
 
 For evaluating the best trained model, execute `python3 -m evaluate`
+
+For searching best learning_rate, execute `python3 -m search_hyperparams`
