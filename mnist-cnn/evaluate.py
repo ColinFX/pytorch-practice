@@ -14,7 +14,7 @@ import utils
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--data_dir", default="data/dataset_name", help="")
+parser.add_argument("--data_dir", default="data", help="")
 parser.add_argument("--model_dir", default="experiments/base_model", help="")   # hyper-parameter json file
 parser.add_argument("--restore_file", default="best", help="")    # "best" or "last", model weights checkpoint
 
@@ -50,6 +50,9 @@ def evaluate(model: nn.Module,
         # core pipeline
         output_batch = model(data_batch)
         loss = loss_fn(output_batch, labels_batch)
+
+        output_batch = output_batch.detach().to(device=torch.device("cpu")).numpy()
+        labels_batch = labels_batch.detach().to(device=torch.device("cpu")).numpy()
 
         # evaluate all metrics on every batch
         summary_batch = {metric: metrics[metric](output_batch, labels_batch) for metric in metrics}
@@ -89,7 +92,7 @@ if __name__ == "__main__":
     logging.info("- Done")
 
     # define model
-    model = net.Net(params).to(device=torch.device("cuda")) if params.cuda else net.Net(params)
+    model = net.Net().to(device=torch.device("cuda")) if params.cuda else net.Net()
     loss_fn = net.loss_fn
     metrics = net.metrics
     num_steps = (params.test_size+1) // params.batch_size

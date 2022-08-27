@@ -18,7 +18,7 @@ import utils
 parser = argparse.ArgumentParser()
 parser.add_argument("--data_dir", default="data/usa_housing", help="")
 parser.add_argument("--model_dir", default="experiments/base_model", help="")   # hyper-parameter json file
-parser.add_argument("--restore_file", default=None, help="")    # "best" or "train", model weights checkpoint
+parser.add_argument("--restore_file", default=None, help="")    # "best" or "last", model weights checkpoint
 
 
 def train(model: nn.Module, 

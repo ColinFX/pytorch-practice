@@ -18,9 +18,9 @@ import utils
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--data_dir", default="data/MNIST", help="")
+parser.add_argument("--data_dir", default="data", help="")
 parser.add_argument("--model_dir", default="experiments/base_model", help="")   # hyper-parameter json file
-parser.add_argument("--restore_file", default=None, help="")    # "best" or "train", model weights checkpoint
+parser.add_argument("--restore_file", default=None, help="")    # "best" or "last", model weights checkpoint
 
 
 def train(model: nn.Module, 
@@ -166,13 +166,13 @@ if __name__ == "__main__":
 
     # load data
     train_data_loader = fetch_dataloader("train", args.data_dir, params)
-    val_data_loader = fetch_dataloader("val", args.data_dir, params)
+    val_data_loader = fetch_dataloader("test", args.data_dir, params)
     params.train_size = len(train_data_loader.dataset)
     params.val_size = len(val_data_loader.dataset)
     logging.info("- Done")
 
     # train and evaluate pipeline
-    model = net.Net(params).to(device=torch.device("cuda")) if params.cuda else net.Net(params)
+    model = net.Net().to(device=torch.device("cuda")) if params.cuda else net.Net()
     optimizer = torch.optim.Adam(model.parameters(), lr=params.learning_rate)
     loss_fn = net.loss_fn
     metrics = net.metrics
