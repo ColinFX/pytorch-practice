@@ -20,7 +20,7 @@ import utils
 parser = argparse.ArgumentParser()
 parser.add_argument("--data_dir", default="data/dataset_name", help="")
 parser.add_argument("--model_dir", default="experiments/base_model", help="")   # hyper-parameter json file
-parser.add_argument("--restore_file", default=None, help="")    # "best" or "train", model weights checkpoint
+parser.add_argument("--restore_file", default=None, help="")    # "best" or "last", model weights checkpoint
 
 
 def train(model: nn.Module, 
@@ -52,8 +52,8 @@ def train(model: nn.Module,
         train_batch, labels_batch = next(data_iterator)
 
         if params.cuda:     # move to GPU if available
-            train_batch = train_batch.cuda(non_blocking=True)
-            labels_batch = labels_batch.cuda(non_blocking=True)
+            train_batch = train_batch.to(device=torch.device("cuda"), non_blocking=True)
+            labels_batch = labels_batch.to(device=torch.device("cuda"), non_blocking=True)
 
         # core pipeline
         output_batch = model(train_batch)
@@ -64,8 +64,8 @@ def train(model: nn.Module,
 
         # evaluate summaries once in a while
         if i % params.save_summary_steps == 0:
-            output_batch = output_batch.detach().cpu().numpy()
-            labels_batch = labels_batch.detach().cpu().numpy()
+            output_batch = output_batch.detach().to(device=torch.device("cpu")).numpy()
+            labels_batch = labels_batch.detach().to(device=torch.device("cpu")).numpy()
             summary_batch = {metric: metrics[metric](output_batch, labels_batch) for metric in metrics}
             summary_batch["loss"] = loss.item()
             summ.append(summary_batch)

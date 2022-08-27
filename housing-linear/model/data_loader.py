@@ -39,7 +39,7 @@ def fetch_dataloaders(data_dir: str, params: utils.Params) -> dict[str, DataLoad
     """
     Args:
         * data_dir: (str) directory containing USA_Housing.csv file
-        * params
+        * params: (Params) hyperparameters
 
     Returns:
         * dataloaders: (dict) "train", "val", "test" -> DataLoader
