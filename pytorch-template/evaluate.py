@@ -26,7 +26,7 @@ def evaluate(model: nn.Module,
              data_iterator: Generator[tuple[torch.Tensor, torch.Tensor], None, None], 
              metrics: dict[str, Callable[[np.ndarray, np.ndarray], np.float64]], 
              params: utils.Params, 
-             num_steps: int) -> dict[str, float]:
+             num_steps: int) -> dict[str, np.float64]:
     """
     Evaluate the model on `num_steps` batches/iterations of size `params.batch_size` as one epoch.
     
