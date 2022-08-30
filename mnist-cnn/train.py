@@ -86,7 +86,7 @@ def train_and_evaluate(model: nn.Module,
                        metrics: dict[str, Callable[[np.ndarray, np.ndarray], np.float64]], 
                        params: utils.Params, 
                        model_dir: str, 
-                       restore_file: str = None): 
+                       restore_file: str = None) -> dict[str, np.float64]: 
     """
     Train and evaluate the model on `params.num_epochs` epochs and save checkpoints and metrics. 
     
@@ -100,6 +100,9 @@ def train_and_evaluate(model: nn.Module,
         * params: (utils.Params) hyperparameters
         * model_dir: (str) directory containing config, checkpoints and log
         * restore_file: (str) optional - name of checkpoint to restore from (without extension .pth.tar)
+
+    Returns:
+        * metrics: (dict) metric_name -> metric_value on the val set of the best epoch
     """
 
     # reload weights from checkpoint is available
@@ -110,16 +113,18 @@ def train_and_evaluate(model: nn.Module,
 
     best_val_acc = 0.0
 
+    best_metrics: dict[str, np.float64] = []
+
     for epoch in range(params.num_epochs):
         logging.info("Epoch {}/{}".format(epoch+1, params.num_epochs))
         
         # train
-        num_steps = (params.train_size+1) // params.batch_size
+        num_steps = int((params.train_size+1) // params.batch_size)
         train_data_iterator = iter(train_data_loader)
         train(model, optimizer, loss_fn, train_data_iterator, metrics, params, num_steps)
 
         # evaluate
-        num_steps = (params.val_size+1) // params.batch_size
+        num_steps = int((params.val_size+1) // params.batch_size)
         val_data_iterator = iter(val_data_loader)
         val_metrics = evaluate(model, loss_fn, val_data_iterator, metrics, params, num_steps)
         val_acc = val_metrics["accuracy"]
@@ -134,6 +139,7 @@ def train_and_evaluate(model: nn.Module,
         
         # overwrite best metrics evaluation result if the model is the best by far
         if is_best:
+            best_metrics = val_metrics
             logging.info("- Found new best accuracy")
             best_val_acc = val_acc
             best_json_path = os.path.join(model_dir, "metrics_val_best_weights.json")
@@ -142,6 +148,8 @@ def train_and_evaluate(model: nn.Module,
         # overwrite last metrics evaluation result
         last_json_path = os.path.join(model_dir, "metric_val_last_weights.json")
         utils.save_dict_to_json(val_metrics, last_json_path)
+
+    return best_metrics
 
 
 if __name__ == "__main__":

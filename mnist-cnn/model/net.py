@@ -1,3 +1,4 @@
+from typing_extensions import Self
 import numpy as np
 import torch
 import torch.nn as nn
@@ -36,6 +37,13 @@ class Net(nn.Module):
         
         data_batch = self.fc1(data_batch)       # batch_size * 10
         return data_batch
+
+    def reset_weights(self):
+        """Reset all weights before next fold to avoid weight leakage"""
+
+        for layer in self.children():
+            if hasattr(layer, 'reset_parameters'):
+                layer.reset_parameters()
 
 
 def loss_fn(outputs: torch.Tensor, labels: torch.Tensor) -> torch.FloatTensor:
