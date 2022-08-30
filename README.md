@@ -6,7 +6,7 @@ A set of practical projects with PyTorch.
 
 * [Linear regression model for USA house price prediction](https://github.com/ColinFX/pytorch-practice/tree/master/housing-linear)
 
-* [CNN for MNIST classification](https://github.com/ColinFX/pytorch-practice/tree/master/mnist-cnn)
+* [CNN for MNIST classification with cross validation](https://github.com/ColinFX/pytorch-practice/tree/master/mnist-cnn)
 
 ## Usage
 
